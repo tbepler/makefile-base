@@ -31,7 +31,7 @@ LDFLAGS:=-lgtest
 ########################
 
 SRCS := $(shell find $(SRC_DIRS) -type f -name "*.cpp")
-OBJS := $(addprefix $(BIN)/,$(SRCS:.cpp=.o))
+OBJS := $(addprefix $(BIN_DIR)/,$(SRCS:.cpp=.o))
 DEPS := $(addprefix $(DEPS_DIR)/,$(SRCS:.cpp=.d))
 
 
@@ -41,9 +41,9 @@ DEPS := $(addprefix $(DEPS_DIR)/,$(SRCS:.cpp=.d))
 
 #find the src files in the test directory
 TEST_SRCS:=$(shell find $(TEST_DIRS) -type f -name "*.cpp")
-TEST_OBJS:=$(addprefix $(BIN)/,$(TEST_SRCS:.cpp=.o))
+TEST_OBJS:=$(addprefix $(BIN_DIR)/,$(TEST_SRCS:.cpp=.o))
 
-TEST_EXE:=$(BIN)/run_test.out
+TEST_EXE:=$(BIN_DIR)/run_test.out
 
 DEPS+=$(addprefix $(DEPS_DIR)/,$(TEST_SRCS:.cpp=.d))
 
@@ -59,19 +59,19 @@ runtest: $(TEST_EXE)
 	./$(TEST_EXE)
 
 clean:
-	rm -r -f $(BIN)
+	rm -r -f $(BIN_DIR)
 	rm -r -f $(DEPS_DIR)
 
 $(TEST_EXE): $(OBJS) $(TEST_OBJS) $(GTEST_OBJS)
 	$(CXX) $(CXXFLAGS) $^ $(LDFLAGS) -o $(TEST_EXE)
 
-$(BIN)/%.o: %.cpp
+$(BIN_DIR)/%.o: %.cpp
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(DEPS_DIR)/%.d: %.cpp
 	@mkdir -p $(@D)
-	@$(CXX) $(CXXFLAGS) -MF $@ -MT"$@" -MT"$(BIN)/$(<:.cpp=.o)" -MP -MM $<
+	@$(CXX) $(CXXFLAGS) -MF $@ -MT"$@" -MT"$(BIN_DIR)/$(<:.cpp=.o)" -MP -MM $<
 
 
 $(DEPS_DIR): $(DEPS)
