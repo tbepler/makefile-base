@@ -9,6 +9,10 @@ TEST_DIRS+=test
 BIN_DIR:=bin
 DEPS_DIR:=depend
 
+MAIN:=main/Main.cpp
+
+EXE:=main.out
+
 TEST_MAIN:=test/run_tests.cpp
 
 ########################
@@ -34,6 +38,8 @@ SRCS := $(shell find $(SRC_DIRS) -type f -name "*.cpp")
 OBJS := $(addprefix $(BIN_DIR)/,$(SRCS:.cpp=.o))
 DEPS := $(addprefix $(DEPS_DIR)/,$(SRCS:.cpp=.d))
 
+MAIN_OBJ := $(addprefix $(BIN_DIR)/,$(MAIN:.cpp=.o))
+DEPS += $(addprefix $(DEPS_DIR)/,$(MAIN:.cpp=.o))
 
 ########################
 # Test settings
@@ -53,6 +59,11 @@ DEPS+=$(addprefix $(DEPS_DIR)/,$(TEST_SRCS:.cpp=.d))
 
 .PHONY: test runtest clean $(DEPS_DIR)
 
+all: $(EXE) test
+
+$(EXE): $(OBJS) $(MAIN_OBJ)
+	$(CXX) $(CXXFLAGS) $^ $(LDFLAGS) -o $(EXE)
+
 test: $(TEST_EXE)
 
 runtest: $(TEST_EXE)
@@ -61,8 +72,9 @@ runtest: $(TEST_EXE)
 clean:
 	rm -r -f $(BIN_DIR)
 	rm -r -f $(DEPS_DIR)
+	rm -f $(EXE)
 
-$(TEST_EXE): $(OBJS) $(TEST_OBJS) $(GTEST_OBJS)
+$(TEST_EXE): $(OBJS) $(TEST_OBJS) 
 	$(CXX) $(CXXFLAGS) $^ $(LDFLAGS) -o $(TEST_EXE)
 
 $(BIN_DIR)/%.o: %.cpp
