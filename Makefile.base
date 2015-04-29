@@ -57,7 +57,7 @@ DEPS+=$(addprefix $(DEPS_DIR)/,$(TEST_SRCS:.cpp=.d))
 # Build targets
 ########################
 
-.PHONY: test runtest clean $(DEPS_DIR)
+.PHONY: test profile runtest clean $(DEPS_DIR)
 
 all: $(EXE) test
 
@@ -65,6 +65,10 @@ $(EXE): $(OBJS) $(MAIN_OBJ)
 	$(CXX) $(CXXFLAGS) $^ $(LDFLAGS) -o $(EXE)
 
 test: $(TEST_EXE)
+
+profile: CXXFLAGS += -pg
+profile: $(OBJS) $(TEST_OBJS)
+	$(CXX) $(CXXFLAGS) $^ $(LDFLAGS) -o $(TEST_EXE)
 
 runtest: $(TEST_EXE)
 	./$(TEST_EXE)
